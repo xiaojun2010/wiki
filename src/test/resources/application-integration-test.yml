@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:wiki-test;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    initialization-mode: never
+
+adconf:
+  mysql:
+    password: test-only
+
+jasypt:
+  encryptor:
+    password: integration-test-key-not-for-production
