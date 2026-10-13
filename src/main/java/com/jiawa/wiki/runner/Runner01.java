@@ -1,5 +1,6 @@
 package com.jiawa.wiki.runner;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
  */
 @Order(value = 1)
 @Component
+@Slf4j
 public class Runner01 implements CommandLineRunner {
     /**
      * 将 参数 封装成 string 数组
@@ -19,6 +21,6 @@ public class Runner01 implements CommandLineRunner {
      */
     @Override
     public void run(String... strings) throws Exception {
-        System.out.println("Running Runner01");
+        log.info("Running Runner01");
     }
 }

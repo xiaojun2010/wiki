@@ -1,14 +1,32 @@
 spring:
   profiles:
     active: prod
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/wiki?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: admin123
+    initialization-mode: never
+
+
+
+mybatis:
+  mapper-locations: classpath*:mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
 
 adconf:
   mysql:
     host: 127.0.0.1
     port: 3306
+    database: wiki
     username: root
     password: admin123
 
+
+test:
+  hello: testhello
 ---
 spring:
   profiles: dev

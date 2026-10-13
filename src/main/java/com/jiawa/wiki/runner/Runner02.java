@@ -1,5 +1,6 @@
 package com.jiawa.wiki.runner;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
  */
 @Order(value = 2)
 @Component
+@Slf4j
 public class Runner02 implements ApplicationRunner {
 
     /**
@@ -20,6 +22,6 @@ public class Runner02 implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments applicationArguments) throws Exception {
 
-        System.out.println("Running Runner02");
+        log.info("Running Runner02");
     }
 }

@@ -1,12 +1,14 @@
 package com.jiawa.wiki.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
 /**
  * Created by Qinyi.
  */
+@ComponentScan("com.jiawa")
 @Configuration
 public class CustomBeanConfig {
 

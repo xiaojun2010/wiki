@@ -1,7 +1,10 @@
 package com.jiawa.wiki;
 
+import lombok.extern.log4j.Log4j2;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
@@ -19,8 +22,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 --add-opens java.rmi/sun.rmi.transport=ALL-UNNAMED
 --add-opens java.desktop/java.awt.font=ALL-UNNAMED
  */
+
+@Log4j2
 @EnableScheduling
 @SpringBootApplication
+@MapperScan("com.jiawa.wiki.mapper")
 public class WikiApplication {
 
     /**
@@ -28,7 +34,11 @@ public class WikiApplication {
      * */
 	public static void main(String[] args) {
 
-		SpringApplication.run(WikiApplication.class, args);
+		SpringApplication application = new SpringApplication(WikiApplication.class);
+
+		Environment environment = application.run(args).getEnvironment();
+		log.info("启动成功！！");
+		log.info("地址：\thttp://127.0.0.1:{}",environment.getProperty("server.port"));
 	}
 }
 

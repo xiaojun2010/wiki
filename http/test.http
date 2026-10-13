@@ -1,0 +1,13 @@
+GET http://localhost:8082/hello
+Accept: application/json
+
+### MyBatis 查询
+GET http://localhost:8082/test/list
+Accept: application/json
+
+###
+
+
+POST http://localhost:8880/hello/post
+Content-Type: application/x-www-form-urlenceoded
+name=TEST

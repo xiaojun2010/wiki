@@ -1,5 +1,6 @@
 package com.jiawa.wiki.schedule;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -7,14 +8,15 @@ import org.springframework.stereotype.Component;
  * Created by Qinyi.
  */
 @Component
+@Slf4j
 public class ScheduledTask {
 
     // @Scheduled(fixedRate = 5000)         上一次开始执行时间点之后5秒再执行
     // @Scheduled(fixedDelay = 5000)        上一次执行完毕时间点之后5秒再执行
     // @Scheduled(cron = "*/5 * * * * *")   通过 crontab 表达式定义规则
 
-    @Scheduled(fixedRate = 1000)
+   // @Scheduled(fixedRate = 1000)
     public void helloSpringBoot() {
-        System.out.println("Hello SpringBoot");
+        log.info("Hello SpringBoot");
     }
 }
