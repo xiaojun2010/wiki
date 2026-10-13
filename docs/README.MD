@@ -21,3 +21,6 @@ npm config set registry http://registry.npm.taobao.org
 
 zxj@zxjdeMacBook-Pro  ~/work/workspace/vue/wiki   main ✚ ● ?  npm get registry                                                                                                                                                                                                                  ✔  955  17:05:55
 https://registry.npmjs.org/
+
+
+https://2x.antdv.com/docs/vue/introduce-cn/
