@@ -48,35 +48,23 @@
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
 
-      <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="listData">
-        <template #footer>
-          <div>
-            <b>ant design vue</b>
-            footer part
-          </div>
-        </template>
+      <a-alert v-if="errorMessage" type="error" :message="errorMessage" show-icon style="margin-bottom: 16px" />
+      <a-list item-layout="vertical" size="large" :grid="{gutter:20,column:3}" row-key="id" :loading="loading" :pagination="pagination" :data-source="ebooks">
+
         <template #renderItem="{ item }">
-          <a-list-item key="item.title">
+          <a-list-item :key="item.id">
             <template #actions>
-          <span v-for="{ type, text } in actions" :key="type">
-            <component v-bind:is="type" style="margin-right: 8px" />
-            {{ text }}
-          </span>
+              <span><book-outlined /> {{ item.docCount ?? 0 }}</span>
+              <span><eye-outlined /> {{ item.viewCount ?? 0 }}</span>
+              <span><like-outlined /> {{ item.voteCount ?? 0 }}</span>
             </template>
-            <template #extra>
-              <img
-                  width="272"
-                  alt="logo"
-                  src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
-              />
-            </template>
+
             <a-list-item-meta :description="item.description">
               <template #title>
-                <a :href="item.href">{{ item.title }}</a>
+                <span>{{ item.name }}</span>
               </template>
-              <template #avatar><a-avatar :src="item.avatar" /></template>
+              <template #avatar><a-avatar :src="item.cover" /></template>
             </a-list-item-meta>
-            {{ item.content }}
           </a-list-item>
         </template>
       </a-list>
@@ -86,65 +74,84 @@
 </template>
 
 <script lang="ts">
-import { defineComponent , onMounted ,ref ,reactive ,toRef} from 'vue';
-import { StarOutlined, LikeOutlined, MessageOutlined } from '@ant-design/icons-vue';
+import { defineComponent, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
+import axios from 'axios';
 
-import axios   from "axios";
-
-
-
-const listData: Record<string, string>[] = [];
-
-for (let i = 0; i < 23; i++) {
-  listData.push({
-    href: 'https://www.antdv.com/',
-    title: `ant design vue part ${i}`,
-    avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-    description:
-        'Ant Design, a design language for background applications, is refined by Ant UED Team.',
-    content:
-        'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
-  });
+interface Ebook {
+  id: number | string;
+  name: string;
+  description: string | null;
+  cover: string | null;
+  docCount: number | null;
+  viewCount: number | null;
+  voteCount: number | null;
 }
 
-
-
+interface EbookResponse {
+  success: boolean;
+  message?: string;
+  content?: {
+    list: Ebook[];
+    total: number;
+  };
+}
 
 export default defineComponent({
   name: 'HomeView',
-  setup(){
-    console.log("setup");
-    //响应式的数据
-    const ebooks = ref();
-    const ebooks1 = reactive({books:[]});
+  setup() {
+    const ebooks = ref<Ebook[]>([]);
+    const loading = ref(false);
+    const errorMessage = ref('');
+    let requestId = 0;
 
-    onMounted( ()=> {
-      console.log("onMounted");
-      axios.get("http://localhost:8082/ebook/list?name=Spring").then(
-          (response) => {
-            const data = response.data;
-            ebooks.value = data.content;
-            ebooks1.books = data.content
-            console.log(response);
-          }
-      );
-    });
-    return {
-      ebooks,
-      ebooks2:toRef(ebooks1,"books"),
-      listData,
-      pagination : {
-        onChange: (page: number) => {
-          console.log(page);
-        },
-        pageSize: 3,
+    const pagination = reactive({
+      current: 1,
+      pageSize: 30,
+      total: 0,
+      showSizeChanger: false,
+      onChange: (page: number) => {
+        void loadEbooks(page);
       },
-      actions:  [
-      { type: 'StarOutlined', text: '156' },
-      { type: 'LikeOutlined', text: '156' },
-      { type: 'MessageOutlined', text: '2' },
-    ]
+    });
+
+    async function loadEbooks(page: number) {
+      const currentRequest = ++requestId;
+      loading.value = true;
+      errorMessage.value = '';
+      try {
+        const response = await axios.get<EbookResponse>('http://localhost:8082/ebook/list', {
+          params: { name: '', page, size: pagination.pageSize },
+        });
+        if (currentRequest !== requestId) return;
+        const data = response.data;
+        if (!data.success || !data.content || !Array.isArray(data.content.list)) {
+          throw new Error(data.message || '电子书列表返回格式不正确');
+        }
+        ebooks.value = data.content.list;
+        pagination.total = data.content.total;
+        pagination.current = page;
+      } catch (error) {
+        if (currentRequest !== requestId) return;
+        errorMessage.value = error instanceof Error ? error.message : '电子书加载失败，请稍后重试';
+      } finally {
+        if (currentRequest === requestId) loading.value = false;
+      }
     }
-  }
+
+    onMounted(() => { void loadEbooks(1); });
+    // Ignore outstanding responses after navigation or a newer request.
+    onBeforeUnmount(() => { requestId++; });
+
+    return { ebooks, loading, errorMessage, pagination };
+  },
 });
 </script>
+<style scoped>
+.ant-avatar {
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  border-radius: 8%;
+  margin: 5px 0;
+}
+</style>
