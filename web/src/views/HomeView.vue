@@ -119,7 +119,7 @@ export default defineComponent({
       loading.value = true;
       errorMessage.value = '';
       try {
-        const response = await axios.get<EbookResponse>(process.env.VUE_APP_SERVER+'/ebook/list', {
+        const response = await axios.get<EbookResponse>('/ebook/list', {
           params: { name: '', page, size: pagination.pageSize },
         });
         if (currentRequest !== requestId) return;
